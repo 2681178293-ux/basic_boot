@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>外卖订单配送 · SSE</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <style>
+    body { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; max-width: 640px; margin: 32px auto; padding: 0 16px; color: #1c1917; }
+    a { color: #0f766e; }
+    .bar { height: 10px; background: #e7e5e4; border-radius: 999px; overflow: hidden; margin: 16px 0; }
+    .fill { height: 100%; background: #0f766e; transition: width .35s ease; }
+    .msg { font-size: 20px; font-weight: 600; min-height: 1.5em; margin: 8px 0; }
+    ul { padding-left: 18px; line-height: 1.8; color: #44403c; }
+    button, input { font: inherit; padding: 8px 12px; }
+    button { cursor: pointer; background: #0f766e; color: #fff; border: 0; border-radius: 8px; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+<p><a href="/">← 返回导航</a></p>
+<div id="app">
+  <h1>外卖订单配送（SSE 入门）</h1>
+  <p>服务端只推 3 条：已下单 → 配送中 → 已送达，然后发 done 结束。</p>
+
+  <label>订单号 <input v-model.trim="orderId"/></label>
+  <button :disabled="tracking" @click="startTrack">开始跟踪</button>
+
+  <div class="bar"><div class="fill" :style="{ width: percent + '%' }"></div></div>
+  <div class="msg">{{ message || '尚未开始' }}</div>
+  <ul>
+    <li v-for="(line, i) in logs" :key="i">{{ line }}</li>
+  </ul>
+</div>
+
+<script>
+Vue.createApp({
+  data() {
+    return {
+      orderId: 'W001',
+      tracking: false,
+      percent: 0,
+      message: '',
+      logs: [],
+      es: null
+    }
+  },
+  methods: {
+    startTrack() {
+      if (this.es) this.es.close()
+      this.logs = []
+      this.percent = 0
+      this.message = '连接中…'
+      this.tracking = true
+
+      const id = this.orderId || 'demo'
+      this.es = new EventSource('/api/order/' + id + '/track')
+
+      this.es.addEventListener('status', (e) => {
+        const data = JSON.parse(e.data)
+        this.logs.push(data.orderId + ' · ' + data.message)
+        this.message = data.message
+        // 3 条消息：33% → 66% → 100%
+        this.percent = Math.round(this.logs.length / 3 * 100)
+      })
+
+      this.es.addEventListener('done', (e) => {
+        const data = JSON.parse(e.data)
+        this.message = data.orderId + ' · ' + data.message
+        this.tracking = false
+        this.es.close()
+      })
+
+      this.es.onerror = () => {
+        this.message = '连接异常或已结束'
+        this.tracking = false
+        if (this.es) this.es.close()
+      }
+    }
+  },
+  unmounted() {
+    if (this.es) this.es.close()
+  }
+}).mount('#app')
+</script>
+</body>
+</html>

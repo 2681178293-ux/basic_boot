@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: 09_springboot_log
+logging:
+  level:
+    root: info
+    net.wanho: debug
+  pattern:
+    # [%X{traceId}]：输出 MDC 里的 traceId；Filter 已 put，Pattern 不写就等于白做
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId}] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId}] %logger{50} - %msg%n"
+  file:
+    name: logs/application.log
+  # 注意：rollingpolicy 挂在 logging.logback 下，不是 logging.file.logback
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 1GB
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz

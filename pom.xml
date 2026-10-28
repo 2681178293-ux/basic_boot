@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>net.wanho</groupId>
+  <artifactId>boot-parent</artifactId>
+  <version>1.0</version>
+
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>01_springboot_hello</module>
+    <module>02_springboot_val_profile</module>
+    <module>03_springboot_mybatis</module>
+    <module>04_springboot_mybatisplus</module>
+    <module>05_springboot_mybatisplusjoin</module>
+    <module>06_springboot_cache</module>
+    <module>07_springboot_exception</module>
+    <module>08_springboot_satoken</module>
+    <module>09_springboot_log</module>
+    <module>10_springboot_async</module>
+    <module>11_springboot_websocket</module>
+	<module>12_springboot_sms_mail</module>
+    <module>13_springboot_vod</module>
+    <module>14_springboot_oss</module>
+  </modules>
+
+  <properties>
+    <!-- boot.version -->
+    <spring-boot.version>4.1.0</spring-boot.version>
+    <mybatis.version>4.0.1</mybatis.version>
+  </properties>
+
+
+
+  <dependencyManagement>
+    <dependencies>
+
+      <dependency>
+        <groupId>org.mybatis.spring.boot</groupId>
+        <artifactId>mybatis-spring-boot-starter</artifactId>
+        <version>${mybatis.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+
+</project>

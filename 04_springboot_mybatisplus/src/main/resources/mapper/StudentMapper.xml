@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.wanho.mapper.StudentMapper">
+
+    <resultMap id="StudentMap" type="Student">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"/>
+        <result property="gender" column="gender"/>
+        <result property="address" column="address"/>
+        <result property="birth" column="birth"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <collection property="scores" ofType="Score">
+            <id property="id" column="scoreId"/>
+            <result property="chinese" column="chinese"/>
+            <result property="math" column="math"/>
+            <result property="english" column="english"/>
+            <result property="stuId" column="stu_id"/>
+        </collection>
+    </resultMap>
+
+    <select id="findStudentAndScores" resultMap="StudentMap">
+        select s.*,s2.id scoreId,s2.chinese,s2.math,s2.english,s2.stu_id
+        from student s left join score s2 on s.id = s2.stu_id
+        ${ew.customSqlSegment}
+    </select>
+</mapper>

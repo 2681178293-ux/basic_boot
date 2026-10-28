@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>STOMP 群聊</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+  <style>
+    body { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; max-width: 640px; margin: 32px auto; padding: 0 16px; }
+    a { color: #0f766e; }
+    ul { list-style: none; padding: 0; border: 1px solid #e7e5e4; border-radius: 8px; min-height: 240px; background: #fffdf9; }
+    li { padding: 8px 12px; border-bottom: 1px solid #f5f5f4; }
+    input, button { font: inherit; padding: 8px 12px; margin: 4px 4px 4px 0; }
+    button { cursor: pointer; background: #0f766e; color: #fff; border: 0; border-radius: 8px; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .path { font-size: 13px; color: #78716c; line-height: 1.6; }
+  </style>
+</head>
+<body>
+<p><a href="/">← 返回导航</a></p>
+<div id="app">
+  <h1>STOMP 主题群聊</h1>
+  <p class="path">
+    握手：<code>/ws-stomp</code>（SockJS 用 http 地址）<br/>
+    发送：<code>/app/chat.send</code> → 订阅：<code>/topic/chat</code>
+  </p>
+  <p>状态：<strong>{{ state }}</strong></p>
+  <input v-model.trim="from" placeholder="昵称"/>
+  <input v-model="content" placeholder="说点什么" style="width:50%" @keyup.enter="send"/>
+  <button :disabled="state !== '已连接'" @click="send">发送</button>
+  <ul>
+    <li v-for="(m, i) in list" :key="i">{{ m.from }}: {{ m.content }}</li>
+  </ul>
+</div>
+
+<script>
+Vue.createApp({
+  data() {
+    return {
+      state: '连接中…',
+      from: '李四',
+      content: '',
+      list: [],
+      stomp: null
+    }
+  },
+  mounted() {
+    const sock = new SockJS('/ws-stomp')
+    this.stomp = Stomp.over(sock)
+    this.stomp.debug = null
+    this.stomp.connect({}, () => {
+      this.state = '已连接'
+      this.stomp.subscribe('/topic/chat', (frame) => {
+        this.list.push(JSON.parse(frame.body))
+      })
+    }, () => {
+      this.state = '连接失败'
+    })
+  },
+  methods: {
+    send() {
+      if (!this.stomp || this.state !== '已连接') return
+      if (!this.content.trim()) return
+      this.stomp.send('/app/chat.send', {}, JSON.stringify({
+        from: this.from,
+        content: this.content
+      }))
+      this.content = ''
+    }
+  }
+}).mount('#app')
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>回声 Echo · WebSocket</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <style>
+    body { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; max-width: 640px; margin: 32px auto; padding: 0 16px; }
+    a { color: #0f766e; }
+    .log { border: 1px solid #e7e5e4; border-radius: 8px; min-height: 180px; padding: 12px; white-space: pre-wrap; background: #fffdf9; }
+    input, button { font: inherit; padding: 8px 12px; margin-top: 8px; }
+    button { cursor: pointer; background: #0f766e; color: #fff; border: 0; border-radius: 8px; }
+  </style>
+</head>
+<body>
+<p><a href="/">← 返回导航</a></p>
+<div id="app">
+  <h1>回声 Echo</h1>
+  <p>路径：<code>/ws/echo</code>。先连上，再发文本，服务端原样加前缀返回。</p>
+  <p>状态：<strong>{{ state }}</strong></p>
+  <button @click="connect">连接</button>
+  <button @click="disconnect">断开</button>
+  <br/>
+  <input v-model="text" placeholder="输入一句话" style="width:70%" @keyup.enter="send"/>
+  <button @click="send">发送</button>
+  <pre class="log">{{ logText }}</pre>
+</div>
+
+<script>
+Vue.createApp({
+  data() {
+    return {
+      state: '未连接',
+      text: '你好，WebSocket',
+      lines: [],
+      ws: null
+    }
+  },
+  computed: {
+    logText() {
+      return this.lines.join('\n')
+    }
+  },
+  methods: {
+    append(line) {
+      this.lines.push(line)
+    },
+    connect() {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) return
+      const url = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/echo'
+      this.ws = new WebSocket(url)
+      this.ws.onopen = () => {
+        this.state = '已连接'
+        this.append('[open] ' + url)
+      }
+      this.ws.onmessage = (e) => this.append('[recv] ' + e.data)
+      this.ws.onclose = () => {
+        this.state = '已断开'
+        this.append('[close]')
+      }
+      this.ws.onerror = () => this.append('[error]')
+    },
+    send() {
+      if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+        alert('请先连接')
+        return
+      }
+      this.ws.send(this.text)
+      this.append('[send] ' + this.text)
+    },
+    disconnect() {
+      if (this.ws) this.ws.close()
+    }
+  },
+  unmounted() {
+    if (this.ws) this.ws.close()
+  }
+}).mount('#app')
+</script>
+</body>
+</html>

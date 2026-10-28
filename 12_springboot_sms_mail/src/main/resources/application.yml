@@ -1,0 +1,23 @@
+
+# 阿里云短信（与 Sample 示例参数一致，生产环境请改用环境变量）
+aliyun:
+  sms:
+    access-key-id: LTAIxxxx
+    access-key-secret: abc123xxx
+    endpoint: dysmsapi.aliyuncs.com
+    sign-name: 注册验证
+    template-code: SMS_5440689
+    product: 万里大学
+
+spring:
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: 89115008@qq.com
+    password: your-smtp-auth-code
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true

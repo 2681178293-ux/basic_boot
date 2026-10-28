@@ -1,16 +1,20 @@
-# Compiled class file
+# IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Maven
+target/
+
+# 编译class
 *.class
 
-# Log file
+# 日志
 *.log
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+# 打包文件
 *.jar
 *.war
 *.nar
@@ -19,6 +23,8 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# 系统临时文件
+.DS_Store
+Thumbs.db
 hs_err_pid*
 replay_pid*

@@ -1,0 +1,25 @@
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      # 总文件大小
+      max-file-size: 10MB
+      # 第一个文件大小
+      max-request-size: 1MB
+      # 解析文件小于1MB在内存，大于1MB超出部分在临时目录
+      file-size-threshold: 1MB
+      # 解析文件时临时目录
+      location: d:/upload/tmp
+
+aliyun:
+  vod:
+    access-key-id: LTAIxxxx
+    access-key-secret: abc123xxx
+    region-id: cn-shanghai
+    cate-id: 1000737338
+    workflow-id: 59b6a1d6ac4177733a3a69775d8f8811
+  oss:
+    region: cn-shanghai
+    bucket: full1522-bucket
+    access-key-id: LTAIxxxx
+    access-key-secret: abc123xxx

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: 13_springboot_vod
+aliyun:
+  vod:
+    access-key-id: LTAIxxxx
+    access-key-secret: abc123xxx
+    region-id: cn-shanghai
+    cate-id: 1000718118
+    workflow-id: f49f1f2f4806cac5f385f63e33e95eff
